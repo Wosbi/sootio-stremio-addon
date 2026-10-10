@@ -1,0 +1,5 @@
+FROM sootio:v1.8.8.1
+COPY addon.js /app/addon.js
+COPY lib/stream-provider/utils/filtering.js /app/lib/stream-provider/utils/filtering.js
+COPY lib/util/landingTemplate.js /app/lib/util/landingTemplate.js
+COPY tests/stream-limit.test.mjs /app/tests/stream-limit.test.mjs

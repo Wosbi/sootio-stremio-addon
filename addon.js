@@ -3,6 +3,7 @@ import StreamProvider from './lib/stream-provider.js'
 import CatalogProvider from './lib/catalog-provider.js'
 import { getManifest } from './lib/util/manifest.js'
 import { obfuscateSensitive } from './lib/common/torrent-utils.js'
+import { limitStreamsPerResolution } from './lib/stream-provider/utils/filtering.js'
 
 const CACHE_MAX_AGE = parseInt(process.env.CACHE_MAX_AGE) || 60 * 60 // 1 hour (like Torrentio)
 const STALE_REVALIDATE_AGE = 4 * 60 * 60 // 4 hours (like Torrentio)
@@ -152,6 +153,7 @@ builder.defineStreamHandler(args => {
             case 'movie':
                 StreamProvider.getMovieStreams(args.config, args.type, args.id)
                     .then(streams => {
+                        streams = limitStreamsPerResolution(streams, args.config?.MaxStreamsPerResolution)
                         const keysToObfuscate = [
                             args.config?.DebridApiKey,
                             ...(Array.isArray(args.config?.DebridServices) ? args.config.DebridServices.map(s => s.apiKey) : [])
@@ -167,6 +169,7 @@ builder.defineStreamHandler(args => {
             case 'series':
                 StreamProvider.getSeriesStreams(args.config, args.type, args.id)
                     .then(streams => {
+                        streams = limitStreamsPerResolution(streams, args.config?.MaxStreamsPerResolution)
                         const keysToObfuscate = [
                             args.config?.DebridApiKey,
                             ...(Array.isArray(args.config?.DebridServices) ? args.config.DebridServices.map(s => s.apiKey) : [])
